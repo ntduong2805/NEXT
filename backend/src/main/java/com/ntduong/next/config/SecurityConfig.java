@@ -18,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -60,26 +59,23 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .cors() // Cho phép CORS từ tất cả các nguồn
+                .cors()
                 .and()
                 .authorizeRequests()
-                .requestMatchers(
-                        new AntPathRequestMatcher("/api/v2/auth/login"),
-                        new AntPathRequestMatcher("/api/v2/auth/register")
-                )
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .antMatchers("/api/v2/auth/login", "/api/v2/auth/register", "/api/v2/listing/get-list", "/api/v2/listing/get", "/api/v2/reservation/listing").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .exceptionHandling() // Thêm phần xử lý ngoại lệ
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint) // Sử dụng JwtAuthenticationEntryPoint khi không xác thực
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
+
 
 }

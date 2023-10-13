@@ -18,3 +18,21 @@ button.primary{
     background-color: #F5385D;
     @apply bg-primary p-2 w-full text-white rounded-2xl;
 }
+.leaflet-bottom,
+.leaflet-control,
+.leaflet-pane,
+.leaflet-top {
+	z-index: 0 !important;
+}
+.leaflet-top {
+	z-index: 0 !important;
+}
+
+.rdrMonth {
+	width: 100% !important;
+}
+
+.rdrCalendarWrapper {
+	font-size: 16px !important;
+	width: 100% !important;
+}

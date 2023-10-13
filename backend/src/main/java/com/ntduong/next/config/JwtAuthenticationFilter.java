@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Optional;
+
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -47,17 +47,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.printf("Email::" + email);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                Optional<UserEntity> user = userRepository.findByEmail(email);
-                if (jwtService.isTokenValid(token, user.get())) {
+                UserEntity user = userRepository.getUserByEmail(email);
+                if (jwtService.isTokenValid(token, user)) {
                     System.out.printf("token valid");
 
-                    Collection<GrantedAuthority> authorities = user.get().getAuthorities();
+                    Collection<GrantedAuthority> authorities = user.getAuthorities();
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, authorities);
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                    request.setAttribute("email", user.get().getEmail());
+                    request.setAttribute("email", user.getEmail());
                 }
             }
 
@@ -68,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
 
             String errorMessage = "JWT token has expired.";
-            String jsonResponse = String.format("{\"timestamp\": \"%s\", \"status\": %d, \"error\": \"%s\", \"message\": \"%s\", \"path\": \"%s\"}",
+            String jsonResponse = String.format("{\"timestamp\": \"%s\", \"codeStatus\": %d, \"error\": \"%s\", \"message\": \"%s\", \"path\": \"%s\"}",
                     new Date(), HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", errorMessage, request.getRequestURI());
 
             response.getWriter().write(jsonResponse);

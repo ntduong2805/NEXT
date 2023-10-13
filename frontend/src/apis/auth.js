@@ -1,4 +1,4 @@
-import { removeToken } from '../utils/authentication'
+import { removeItem } from '../utils/authentication'
 import http from '../utils/http'
 
 const authApi = {
@@ -18,11 +18,18 @@ const authApi = {
         http.post('auth/profile', {
             
         }),
+    getFavorites: async (data) =>
+        http.post('auth/get-favorites', {
+            userId: data
+        }),
+    actionFavorites: async (userId, listingId) => 
+        http.post('auth/action-favorite', {
+            userId,
+            listingId
+        }),
     logout: async () => {
-        removeToken()
-    },
-    profile: async () =>
-        http.post('auth/profile', {}),
+        removeItem()
+    }
 }
 
 export default authApi

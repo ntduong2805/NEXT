@@ -1,42 +1,47 @@
-import axios from 'axios'
-import { getToken, removeToken, setToken } from './authentication'
+import axios from 'axios';
+import { getToken, setToken, setUser, removeItem } from './authentication';
 
 const http = axios.create({
     baseURL: 'http://localhost:8080/api/v2/',
     // Thêm cấu hình CORS vào đây
     withCredentials: true, // Cho phép gửi cookie và headers qua các nguồn khác nhau
-})
+    headers: {
+        'Content-Type': 'application/json', // Đặt kiểu dữ liệu của yêu cầu là JSON
+    },
+});
 
-http.interceptors.request.use((request) => {
+http.interceptors.request.use((config) => {
     if (getToken()) {
-        request.headers.Authorization = `Bearer ${getToken()}`
+        config.headers.Authorization = `Bearer ${getToken()}`;
     } else {
         // Trong trường hợp đăng nhập, bạn có thể bỏ header Authorization
-        if (request.url !== 'auth/login') {
-            request.headers.Authorization = null;
+        if (config.url !== 'auth/login') {
+            config.headers.Authorization = null;
         }
     }
-    return request
-})
+    if (config.method === 'options') {
+        return Promise.reject('OPTIONS request');
+      }
+    return config;
+});
 
 http.interceptors.response.use(
     (response) => {
-        
         if (
             response.config.url === 'auth/login' &&
             response?.data?.codeStatus === 200
         ) {
-            setToken(response?.data.data.id_refresh_token);
+            setToken(response?.data.data.token);
+            setUser(response?.data.data.user);
+        }
+        if (response?.data?.status === 401) {
+            console.log(response)
+            removeItem();
+            window.location.href = "/";
         }
 
         return response;
-    },
-    (error) => {
-        if (error?.response && error?.response?.status === 401) {
-            removeToken();
-            window.location.href = '/login';
-        }
-    }
+    } 
 );
 
-export default http
+export default http;

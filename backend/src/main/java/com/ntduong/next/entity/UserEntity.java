@@ -17,7 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Setter
@@ -36,13 +36,13 @@ public class UserEntity implements UserDetails {
     private String email;
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    private List<Role> roles;
 
     @Override
-    public Set<GrantedAuthority> getAuthorities() {
+    public List<GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(role -> (GrantedAuthority) role)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     @Override

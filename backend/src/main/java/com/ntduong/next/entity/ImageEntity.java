@@ -17,7 +17,6 @@ public class ImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long imageId;
-    private Long placeId;
-    private Integer isPrimary;
-    private String imageUrl;
+    private Long listingId;
+    private String url;
 }

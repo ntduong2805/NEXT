@@ -1,8 +1,9 @@
 package com.ntduong.next.controller.impl;
 import com.ntduong.next.controller.AuthController;
+import com.ntduong.next.dto.user.UserFavoriteReq;
 import com.ntduong.next.dto.user.UserRegisterDto;
 import com.ntduong.next.dto.user.UserLoginDto;
-import com.ntduong.next.dto.user.UserResponseDto;
+import com.ntduong.next.dto.user.UserResDto;
 import com.ntduong.next.service.impl.JwtServiceImpl;
 import com.ntduong.next.service.impl.UserServiceImpl;
 import com.ntduong.next.util.Response;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -46,8 +48,31 @@ public class AuthControllerImpl implements AuthController {
     public Response profile() {
         long start = System.currentTimeMillis();
         try {
-            UserResponseDto user = userService.profile();
+            UserResDto user = userService.profile();
             return new Response(user, start);
+        } catch (Exception e) {
+            return new Response(400, e.getMessage(), start);
+        }
+    }
+
+    @PostMapping(value = "/action-favorite")
+    @Override
+    public Response addFavorite(@RequestBody UserFavoriteReq favoriteReq) {
+        long start = System.currentTimeMillis();
+        try {
+            String res = userService.actionFavorite(favoriteReq);
+            return new Response(res, start);
+        } catch (Exception e) {
+            return new Response(400, e.getMessage(), start);
+        }
+    }
+    @PostMapping("/get-favorites")
+    @Override
+    public Response getFavorites(@RequestBody UserFavoriteReq userFavoriteReq) {
+        long start = System.currentTimeMillis();
+        try {
+            List<Long> res = userService.getFavorites(userFavoriteReq);
+            return new Response(res, start);
         } catch (Exception e) {
             return new Response(400, e.getMessage(), start);
         }
