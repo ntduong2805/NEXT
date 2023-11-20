@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ImageRepository extends JpaRepository<ImageEntity, Long> {
-    List<ImageEntity> getImageEntitiesByListingId(Long listingId);
-    @Query("SELECT i.url FROM ImageEntity i WHERE i.listingId = :listingId")
-    List<String> getUrlByListingId(Long listingId);
+
+    @Query("SELECT i.url FROM ImageEntity i WHERE i.placeId = :placeId")
+    List<String> getUrlByPlaceId(Long placeId);
 }

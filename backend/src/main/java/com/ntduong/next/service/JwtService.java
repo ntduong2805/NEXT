@@ -1,6 +1,7 @@
 package com.ntduong.next.service;
 
 
+import com.ntduong.next.util.UserProfileUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,7 +22,7 @@ public class JwtService {
     private static final String SECRET = "7538782F413F4428472B4B6250655368566D5971337336763979244226452948";
 
 
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -47,9 +48,9 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token) {
+        final String email = extractEmail(token);
+        return (email.equals(UserProfileUtils.getEmailLogin()) && !isTokenExpired(token));
     }
 
 

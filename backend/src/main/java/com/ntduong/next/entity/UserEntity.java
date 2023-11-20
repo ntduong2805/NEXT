@@ -30,10 +30,13 @@ import java.util.stream.Collectors;
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
     private String username;
     private String password;
     private String email;
+    private String avatar;
+    private String phoneNumber;
+    private Long isVerifyEmail;
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<Role> roles;

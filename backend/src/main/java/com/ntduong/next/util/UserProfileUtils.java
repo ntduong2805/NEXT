@@ -26,7 +26,7 @@ public class UserProfileUtils {
     }
 
     public static Long getUserId() {
-        return getUserPrincipal() != null ? getUserPrincipal().getId() : null;
+        return getUserPrincipal() != null ? getUserPrincipal().getUserId() : null;
     }
 
 

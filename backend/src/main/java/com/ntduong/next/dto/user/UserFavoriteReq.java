@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 public class UserFavoriteReq {
     private Long userId;
-    private Long listingId;
+    private Long placeId;
 }

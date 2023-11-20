@@ -10,7 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UserResDto {
-    private long id;
+    private Long userId;
     private String username;
     private String email;
+    private String avatar;
+    private String phoneNumber;
+    private Long isVerified;
 }

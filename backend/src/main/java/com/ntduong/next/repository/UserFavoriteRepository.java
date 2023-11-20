@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface UserFavoriteRepository extends JpaRepository<UserFavoriteEntity, Long> {
-    @Query("SELECT u.listingId FROM UserFavoriteEntity u WHERE u.userId = :userId")
-    List<Long> getListingIdByUserId(Long userId);
+    @Query("SELECT u.placeId FROM UserFavoriteEntity u WHERE u.userId = :userId")
+    List<Long> getPlaceIdByUserId(Long userId);
 
-    void deleteUserFavoriteEntityByListingIdAndAndUserId(Long listingId, Long userId);
+    void deleteUserFavoriteEntityByPlaceIdAndUserId(Long placeId, Long userId);
 }

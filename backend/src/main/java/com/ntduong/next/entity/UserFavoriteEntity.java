@@ -26,5 +26,5 @@ public class UserFavoriteEntity {
 
     private Long userId;
 
-    private Long listingId;
+    private Long placeId;
 }

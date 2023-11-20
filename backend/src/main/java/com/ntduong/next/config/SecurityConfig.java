@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -62,7 +63,7 @@ public class SecurityConfig {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v2/auth/login", "/api/v2/auth/register", "/api/v2/listing/get-list", "/api/v2/listing/get", "/api/v2/reservation/listing").permitAll()
+                .antMatchers("/api/v2/auth/get-user", "/api/v2/auth/login", "/api/v2/auth/register", "/api/v2/place/get-list", "/api/v2/place/get", "/api/v2/reservation/place", "/api/v2/auth/clear-cache").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()

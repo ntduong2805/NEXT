@@ -18,7 +18,7 @@ const EmptyState = ({
           <Button
             outline
             label="Reset filters"
-            onClick={() => navigate("/")}
+            onClick={() => window.location.reload()}
           />
         )}
       </div>

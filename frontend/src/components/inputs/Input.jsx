@@ -1,31 +1,18 @@
-import React, { useState } from "react";
-import { BiDollar } from "react-icons/bi";
+import React from 'react';
+import { BiDollar } from 'react-icons/bi';
 
 function Input({
   id,
   label,
-  type = "text",
+  type = 'text',
   disabled,
   formatPrice,
   register,
-  required,
   errors,
   isTextArea,
   isPriceInput,
 }) {
-  const [value, setValue] = useState(""); // State để theo dõi giá trị của input
-
-  // Hàm xử lý khi giá trị của input thay đổi
-  const handleChange = (event) => {
-    let inputValue = event.target.value;
-
-    // Kiểm tra nếu là input price thì chỉ cho phép nhập số và dấu "."
-    if (isPriceInput) {
-      inputValue = inputValue.replace(/[^0-9.]/g, "");
-    }
-
-    setValue(inputValue);
-  };
+  const isRequired = isPriceInput; // Kiểm tra isPriceInput
 
   return (
     <div className="relative">
@@ -36,36 +23,34 @@ function Input({
         <textarea
           id={id}
           disabled={disabled}
-          {...register(id, { required: isPriceInput ? "required" : false })}
+          {...register(id, { required: isRequired })} // Đã thay đổi ở đây
           placeholder=""
           rows={4}
           className={`w-full p-4 pt-8 font-light bg-white border-2 rounded-md outline-none transition ${
-            formatPrice && isPriceInput ? "pl-9" : "pl-4"
-          } ${errors[id] ? "border-rose-500 focus:border-rose-500" : "border-neutral-300 focus:border-black"
-          } disabled:opacity-70 disabled:cursor-not-allowed`}
-          value={value} // Giá trị của input
-          onChange={handleChange} // Xử lý khi giá trị thay đổi
+            formatPrice && isPriceInput ? 'pl-9' : 'pl-4'
+          } ${errors[id] ? 'border-rose-500 focus-border-rose-500' : 'border-neutral-300 focus-border-black'} ${
+            disabled ? 'opacity-70 cursor-not-allowed' : ''
+          }`}
         />
       ) : (
         <input
           id={id}
           disabled={disabled}
-          {...register(id, { required: isPriceInput ? "required" : false })}
+          {...register(id, { required: isRequired })} // Đã thay đổi ở đây
           placeholder=""
           type={type}
           className={`w-full p-4 pt-8 font-light bg-white border-2 rounded-md outline-none transition ${
-            formatPrice && isPriceInput ? "pl-9 p-5" : "pl-4"
-          } ${errors[id] ? "border-rose-500 focus:border-rose-500" : "border-neutral-300 focus:border-black"
-          } disabled:opacity-70 disabled:cursor-not-allowed`}
-          value={value} // Giá trị của input
-          onChange={handleChange} // Xử lý khi giá trị thay đổi
+            formatPrice && isPriceInput ? 'pl-9 p-5' : 'pl-4'
+          } ${errors[id] ? 'border-rose-500 focus-border-rose-500' : 'border-neutral-300 focus-border-black'} ${
+            disabled ? 'opacity-70 cursor-not-allowed' : ''
+          }`}
         />
       )}
       <label
         htmlFor={id}
-        className={`absolute text-md duration-150 transform -translate-y-3 top-2 left-4 bg-white px-2 ${
-          errors[id] ? "text-rose-500" : "text-neutral-500"
-        } ${formatPrice && isPriceInput ? "left-9" : ""} ${disabled ? "opacity-70 cursor-not-allowed" : ""}`}
+        className={`absolute text-sm duration-150 transform -translate-y-3 top-2 left-4 bg-white px-2 ${
+          errors[id] ? 'text-rose-500' : 'text-neutral-500'
+        } ${formatPrice && isPriceInput ? 'left-9' : ''} ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
         {label}
       </label>

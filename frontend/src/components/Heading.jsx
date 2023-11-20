@@ -1,6 +1,6 @@
 import React from "react";
 
-function Heading({ title, subtitle, center }) {
+function Heading({ title, subtitle, address, center }) {
   return (
     <div className={center ? "text-center" : "text-start"}>
       <div className="text-2xl font-bold">{title}</div>

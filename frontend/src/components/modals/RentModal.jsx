@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import Modal from "./Modal";
 import Heading from "../Heading";
 import { categories } from "../navbars/Categories";
-import Input from "../inputs/Input";
 import CategoryInput from "../inputs/CategoryInput";
 import CountrySelect from "../inputs/CountrySelect";
 import Map from "../Map";
@@ -10,11 +9,11 @@ import useRentModal from "../../hooks/useRentModal";
 import ImageUpload from "../inputs/ImageUpload";
 import Counter from "../inputs/Counter";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import listingApi from "../../apis/listing";
-
+import { useCreatePlace } from "../../hooks/useCreatePlace";
+import { Form, Input } from "antd";
+import { Spin } from "antd";
+import { GoogleMap, LoadScript, Autocomplete } from '@react-google-maps/api';
 const STEPS = {
   CATEGORY: 0,
   LOCATION: 1,
@@ -26,7 +25,6 @@ const STEPS = {
 const RentModal = () => {
   const rentModal = useRentModal();
   const [step, setStep] = useState(STEPS.CATEGORY);
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     category: "",
     location: null,
@@ -35,10 +33,19 @@ const RentModal = () => {
     bathroomCount: 1,
     imageSrc: [],
     price: 1,
+    address: "",
+    title: "",
+    description: "",
   });
   const [mapZoom, setMapZoom] = useState(12);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    resđet,
+  } = useForm();
   const navigate = useNavigate();
+  const { data, isLoading, mutateAsync, isSuccess } = useCreatePlace();
 
   const setCustomValue = (id, value) => {
     setFormData((prevData) => ({
@@ -84,35 +91,43 @@ const RentModal = () => {
     }
   }, [formData.location]);
 
-  const onSubmit = async (data) => {
+  const handleChangeTitle = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      title: value,
+    }));
+  };
+
+  const handleChangeAddress = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      address: value,
+    }));
+  };
+  const handleChangeDescription = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      description: value,
+    }));
+  };
+
+  const handleChangePrice = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      price: value,
+    }));
+  };
+  const onSubmit = async () => {
     if (step !== STEPS.DESCRIPTION) {
       return onNext();
     }
-    data.category = formData.category;
-    data.location = formData.location.value;
-    data.guestCount = formData.guestCount;
-    data.roomCount = formData.roomCount;
-    data.bathroomCount = formData.bathroomCount;
-    data.imageSrc = formData.imageSrc;
-
-    setIsLoading(true);
-    const response = await listingApi.createListing(data);
-    if (response?.data.codeStatus === 200) {
-      toast.success("Listing created successfully!");
-      reset();
-      setStep(STEPS.CATEGORY);
-      setIsLoading(false);
-      rentModal.onClose();
-      window.location.href = "/";
-    } else {
-      console.error("Listing error:", response?.data.message);
-      toast.error("Something went wrong!");
-      setIsLoading(false);
-    }
-  }
+    await mutateAsync(formData);
+  };
 
   useEffect(() => {
-    if (rentModal.isOpen) {
+    if (isSuccess) {
+      rentModal.onClose();
+      setStep(STEPS.CATEGORY);
       setFormData({
         category: "",
         location: null,
@@ -120,10 +135,13 @@ const RentModal = () => {
         roomCount: 1,
         bathroomCount: 1,
         imageSrc: [],
-        price: 1,
+        price: "",
+        address: "",
+        title: "",
+        description: "",
       });
     }
-  }, [rentModal.isOpen]);
+  }, [isSuccess]);
 
   let bodyContent = (
     <div className="flex flex-col gap-8">
@@ -149,21 +167,44 @@ const RentModal = () => {
   );
 
   if (step === STEPS.LOCATION) {
+    const [mapCenter, setMapCenter] = useState(formData.location?.latlng);
+    const { isLoaded, loadError } = useLoadScript({
+      googleMapsApiKey: "AIzaSyDniGYXtG1h35uDOOTHalPy3hR34vhQVIU",
+      libraries: ["places"],
+    });
+
+    if (loadError) return "Error loading maps";
+    if (!isLoaded) return "Loading Maps...";
+
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
           title="Where is your place located?"
           subtitle="Help guests find you!"
         />
-        <CountrySelect
-          value={formData.location}
-          onChange={(value) => setCustomValue("location", value)}
-        />
-        <Map
-          center={formData.location?.latlng}
-          zoom={mapZoom}
-          key={formData.location?.latlng}
-        />
+        <LoadScript
+          googleMapsApiKey="AIzaSyDniGYXtG1h35uDOOTHalPy3hR34vhQVIU"
+          libraries={["places"]}
+        >
+          <Autocomplete
+            onLoad={(autocomplete) => {
+              console.log('Autocomplete loaded:', autocomplete);
+            }}
+            onPlaceChanged={() => handlePlaceSelect(autocomplete.getPlace())}
+          >
+            <input
+              type="text"
+              placeholder="Enter your location"
+            />
+          </Autocomplete>
+          <GoogleMap
+            mapContainerStyle={mapStyles}
+            center={mapCenter}
+            zoom={mapZoom}
+          >
+            {/* You can customize the map further if needed */}
+          </GoogleMap>
+        </LoadScript>
       </div>
     );
   }
@@ -220,60 +261,97 @@ const RentModal = () => {
           title="Describe your place to guests"
           subtitle="Tell guests what makes your place unique"
         />
-        <Input
-          id="title"
-          label="Title"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-        {errors.title && (
-          <span className="text-red-500">Title is required</span>
-        )}
-        <hr />
-        <Input
-          id="address"
-          label="Address"
-          disabled={isLoading}
-          register={register}
-          isTextArea={true}
-          errors={errors}
-        />
-        {errors.description && (
-          <span className="text-red-500">Address is required</span>
-        )}
-        <hr />
-        <Input
-          id="description"
-          label="Description"
-          disabled={isLoading}
-          register={register}
-          isTextArea={true}
-          errors={errors}
-        />
-        {errors.description && (
-          <span className="text-red-500">Description is required</span>
-        )}
-        <hr />
-        <Heading
-          title="How much do you want to charge?"
-          subtitle="Set a price per night"
-        />
-        <Input
-          id="price"
-          label="Price"
-          formatPrice={true}
-          disabled={isLoading}
-          register={register}
-          isPriceInput={true}
-          errors={errors}
-        />
-        {errors.price && (
-          <span className="text-red-500">Price is required</span>
-        )}
+        <Form
+          name="complex-form"
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 20,
+          }}
+          labelAlign="top"
+          style={{
+            maxWidth: 600,
+          }}
+        >
+          <Form.Item label="Title" name="title">
+            <Input
+              id="title"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              isTextArea={false}
+              value={formData.title}
+              onChange={(e) => handleChangeTitle(e.target.value)}
+              required
+            />
+            {errors.title && (
+              <span className="text-red-500">Title is required</span>
+            )}
+          </Form.Item>
+          
+          <Form.Item label="Address" name="address">
+            <Input
+              id="address"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              isTextArea={false}
+              value={formData.address}
+              onChange={(e) => handleChangeAddress(e.target.value)}
+              required
+            />
+            {errors.address && (
+              <span className="text-red-500">Address is required</span>
+            )}
+          </Form.Item>
+          
+          <Form.Item label="Description" name="description">
+            <Input
+              id="description"
+              disabled={isLoading}
+              register={register}
+              isTextArea={true}
+              rows={4} 
+              errors={errors}
+              value={formData.description}
+              onChange={(e) => handleChangeDescription(e.target.value)}
+              className="w-full"
+              required
+            />
+            {errors.description && (
+              <span className="text-red-500">Description is required</span>
+            )}
+          </Form.Item>
+          
+          <Heading
+            title="How much do you want to charge?"
+            subtitle="Set a price per night"
+          />
+          <Form.Item label="Price" name="price">
+            <Input
+              type="number"
+              prefix="$"
+              id="price"
+              formatPrice={true}
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              value={formData.price}
+              onChange={(e) => handleChangePrice(e.target.value)}
+              required
+            />
+            {errors.price && (
+              <span className="text-red-500">Price is required</span>
+            )}
+          </Form.Item>
+        </Form>
       </div>
     );
   }
+  
+  
+  
 
   return (
     <Modal
@@ -283,8 +361,17 @@ const RentModal = () => {
       actionLabel={actionLabel}
       secondaryActionLabel={secondaryActionLabel}
       secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-      body={bodyContent}
+      body={
+        isLoading ? ( // Sử dụng isLoading từ API call
+          <div className="flex justify-center items-center h-96">
+            <Spin size="large" />
+          </div>
+        ) : (
+          bodyContent
+        )
+      }
       title="Next your home!"
+      isLoading={isLoading}
     />
   );
 };

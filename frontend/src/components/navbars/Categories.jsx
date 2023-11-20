@@ -30,76 +30,61 @@ export const categories = [
     label: "Beach",
     icon: TbBeach,
     description: "This property is close to the beach!",
+    mota: "Biển"
   },
   {
     label: "Windmills",
     icon: GiWindmill,
     description: "This property has windmills!",
+    mota: "Cối xoay gió"
   },
   {
     label: "Modern",
     icon: MdOutlineVilla,
     description: "This property is modern!",
+    mota: "Hiện đại"
   },
   {
     label: "Countryside",
     icon: TbMountain,
     description: "This property is in the countryside!",
+    mota: "Nông thôn"
   },
   {
     label: "Pools",
     icon: TbPool,
     description: "This property has a beautiful pool!",
+    mota: "Bể bơi"
   },
   {
     label: "Islands",
     icon: GiIsland,
     description: "This property is on an island!",
+    mota: "Đảo"
   },
   {
     label: "Lake",
     icon: GiBoatFishing,
     description: "This property is near a lake!",
-  },
-  {
-    label: "Skiing",
-    icon: FaSkiing,
-    description: "This property has skiing activities!",
-  },
-  {
-    label: "Castles",
-    icon: GiCastle,
-    description: "This property is an ancient castle!",
-  },
-  {
-    label: "Caves",
-    icon: GiCaveEntrance,
-    description: "This property is in a spooky cave!",
+    mota: "Hồ"
   },
   {
     label: "Camping",
     icon: GiForestCamp,
     description: "This property offers camping activities!",
-  },
-  {
-    label: "Arctic",
-    icon: BsSnow,
-    description: "This property is in an arctic environment!",
-  },
-  {
-    label: "Desert",
-    icon: GiCactus,
-    description: "This property is in the desert!",
+    mota: "Cắm trại"
   },
   {
     label: "Barns",
     icon: GiBarn,
     description: "This property is in a barn!",
+    mota: "Trang trại"
   },
   {
     label: "Lux",
     icon: IoDiamond,
     description: "This property is brand new and luxurious!",
+    mota: "Sang trọng"
   },
 ];
 
@@ -117,7 +102,7 @@ const Categories = () => {
 
   return (
     <Container>
-      <div className="pt-4 flex flex-row items-center justify-between overflow-x-auto">
+      <div className="flex flex-row items-center justify-between overflow-x-auto">
         {categories.map((item, index) => (
           <CategoryBox
             key={index}

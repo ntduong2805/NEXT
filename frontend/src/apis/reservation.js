@@ -2,21 +2,36 @@
 import http from '../utils/http'
 
 const reservationApi = {
-    getReservationByListingId: async (data) =>
-        http.post("/reservation/listing", {
-            listingId: data
+    getReservationByPlaceId: async ({ queryKey }) =>
+        http.post("/reservation/place", {
+            placeId: queryKey[1]
         }),
-    getReservationByUserId: async (data) =>
-        http.post("/reservation/user", {
-            userId: data
+    getReservationByUser: async () =>
+        http.post("/reservation/user"),
+
+    getReservationByOwner: async ({ queryKey }) =>
+        http.post("/reservation/owner", {
+            status: queryKey[1]
         }),
-    reservation: async (reservation) =>
+
+    createReservation: async (reservation) =>
         http.post("/reservation/create", {
             userId: reservation.userId,
-            listingId: reservation.listingId,
+            placeId: reservation.placeId,
             startDate: reservation.startDate,
             endDate: reservation.endDate,
+            nightCount: reservation.nightCount,
+            guestCount: reservation.guestCount,
             totalPrice: reservation.totalPrice
+        }),
+    cancelReservation: async ({ reservationId }) => 
+        http.post("/reservation/cancel",{
+            reservationId
+        }),
+    statusChange: async (data) =>
+        http.post("/reservation/status-change", {
+            reservationId: data.reservationId,
+            status: data.status
         })
     
 }

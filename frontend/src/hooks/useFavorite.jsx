@@ -3,16 +3,8 @@ import { toast } from "react-hot-toast";
 import useLoginModal from "./useLoginMoal";
 import authApi from "../apis/auth";
 
-const useFavorite = ({ listingId, currentUser }) => {
+const useFavorite = ({ placeId, currentUser }) => {
   const loginModal = useLoginModal();
-
-  const hasFavorited = useMemo(async () => {
-    if (currentUser) {
-        const list =
-        (await authApi.getFavorites(currentUser.id))?.data?.data || [];
-        return list;
-    }
-  }, [currentUser, listingId]);
 
   const toggleFavorite = useCallback(
     async (e) => {
@@ -23,8 +15,7 @@ const useFavorite = ({ listingId, currentUser }) => {
       }
 
       try {
-        const response = await authApi.actionFavorites(currentUser.id, listingId)
-        console.log(response?.data?.codeStatus)
+        const response = await authApi.actionFavorites(currentUser.userId, placeId)
         if (response?.data?.codeStatus == 200) {
             toast.success("Successfully updated favorites");
         }
@@ -32,11 +23,10 @@ const useFavorite = ({ listingId, currentUser }) => {
         toast.error("Something went wrong");
       }
     },
-    [currentUser, hasFavorited, listingId, loginModal]
+    [currentUser, placeId, loginModal]
   );
 
   return {
-    hasFavorited,
     toggleFavorite,
   };
 };

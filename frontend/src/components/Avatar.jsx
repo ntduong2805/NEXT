@@ -1,14 +1,20 @@
 import React from "react";
 import Image from "./Image";
 
-const Avatar = () => {
+const Avatar = ({ avatar }) => {
+  const avatarStyle = {
+    borderRadius: "50%", 
+    objectFit: "cover",  
+    height: "30px",    
+    width: "30px",   
+  };
+
   return (
     <Image
       className="rounded-full"
-      height={30}
-      width={30}
       alt="Avatar"
-      src="/images/placeholder.jpg"
+      src={avatar ? avatar : "/images/placeholder.jpg"}
+      style={avatarStyle}
     />
   );
 };

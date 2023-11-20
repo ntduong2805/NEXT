@@ -9,9 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.19.2",
+    "@tanstack/react-query": "^4.36.1",
+    "@tanstack/react-query-devtools": "^4.36.1",
+    "antd": "^5.11.0",
     "autoprefixer": "^10.4.13",
     "axios": "^1.2.2",
     "cloudinary": "^1.41.0",
+    "cloudinary-core": "^2.13.0",
     "cloudinary-react": "^1.8.1",
     "date-fns": "^2.29.3",
     "leaflet": "^1.9.4",
@@ -26,9 +31,17 @@
     "react-icons": "^4.11.0",
     "react-image": "^4.1.0",
     "react-leaflet": "^4.2.1",
+    "react-redux": "^8.1.3",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.16.0",
     "react-select": "^5.7.5",
+    "react-slick": "^0.29.0",
+    "react-stomp": "^5.1.0",
+    "react-tabs": "^6.0.2",
+    "react-toastify": "^9.1.3",
+    "slick-carousel": "^1.8.1",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "styled-components": "^6.0.8",
     "tailwindcss": "^3.2.4",
     "world-countries": "^5.0.0",
@@ -39,6 +52,9 @@
     "@types/react-dom": "^18.0.9",
     "@vitejs/plugin-react": "^3.0.0",
     "typescript": "^5.2.2",
-    "vite": "^4.0.0"
+    "vite": "^4.0.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   }
 }

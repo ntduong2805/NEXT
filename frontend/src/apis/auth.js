@@ -7,29 +7,45 @@ const authApi = {
             email,
             password,
         }),
-    register: async (email, username, password) =>
+    register: async (email, username, password, phoneNumber) =>
         http.post('auth/register', {
             email,
             username,
             password,
+            phoneNumber
         }),
     
     profile: async () => 
         http.post('auth/profile', {
             
         }),
-    getFavorites: async (data) =>
+    getFavorites: async ({ queryKey }) =>
         http.post('auth/get-favorites', {
-            userId: data
+            userId: queryKey[1]
         }),
-    actionFavorites: async (userId, listingId) => 
+    actionFavorites: async (userId, placeId) => 
         http.post('auth/action-favorite', {
             userId,
-            listingId
+            placeId
+        }),
+    getUserById: async ({ queryKey }) =>
+        http.post('auth/get-user', {
+            userId: queryKey[1]
         }),
     logout: async () => {
         removeItem()
-    }
+        },
+    sendOTP: async () => {
+        http.post('auth/send-otp'
+        )},
+    verifyOTP: async ({otpCode}) => 
+        http.post('auth/verify-otp', {
+            otpCode: otpCode
+        }),
+    uploadAvatar: async({avatar}) =>
+        http.post('auth/upload-avatar', {
+            avatar: avatar
+        })
 }
 
 export default authApi

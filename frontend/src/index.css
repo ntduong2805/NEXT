@@ -6,8 +6,33 @@ input[type="text"],input[type="password"],
 input[type="email"],input[type="number"],
 input[type="tel"],
 textarea{
-    @apply w-full border my-1 py-2 px-3 rounded-2xl;
+    @apply w-full border my-1 py-2 px-3 rounded-md;
 }
+.ant-input {
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+  }
+  
+  /* Kiểu khi Input được focus */
+  .ant-input:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 5px rgba(24, 144, 255, 0.2);
+  }
+  
+  /* Xóa viền tròn (outline) khi Input được focus */
+  .ant-input:focus:not(.ant-input-disabled) {
+    box-shadow: none;
+  }
+  
+  /* Xử lý Input bị vô hiệu hóa */
+  .ant-input-disabled {
+    background-color: #f5f5f5;
+    color: #000;
+    cursor: not-allowed;
+  }
 textarea{
     height: 140px;
 }
@@ -15,7 +40,7 @@ button{
     @apply bg-gray-300;
 }
 button.primary{
-    background-color: #F5385D;
+    background-color: #0066FF;
     @apply bg-primary p-2 w-full text-white rounded-2xl;
 }
 .leaflet-bottom,

@@ -1,0 +1,23 @@
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    /* Số dòng tối đa */
+    -webkit-box-orient: vertical;
+}
+
+.carousel-button {
+  background-color: transparent; /* Đặt màu nền là trong suốt */
+  border: none; /* Loại bỏ đường viền */
+  border-radius: 50%; /* Đặt viền thành hình tròn */
+  padding: 10px; /* Thay đổi khoảng cách từ viền đến biểu tượng */
+  cursor: pointer; /* Biểu tượng con trỏ khi di chuột vào */
+  z-index: 2;
+  transition: background-color 0.3s ease; /* Thêm hiệu ứng khi hover */
+}
+
+.carousel-button:hover {
+  background-color: white; /* Đổi màu nền khi hover */
+}
+

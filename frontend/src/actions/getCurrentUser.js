@@ -16,7 +16,7 @@ export default async function getCurrentUser() {
         const decodedJwt = parseJwt(token);
         if (decodedJwt.exp * 1000 < Date.now()) {
             removeItem();
-			return null;
+			window.location.href("/");
 		}
         if (user === null) {
             const response = await authApi.profile();

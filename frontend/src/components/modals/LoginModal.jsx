@@ -1,18 +1,18 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import useLoginModal from "../../hooks/useLoginMoal";
-import useRegisterModal from "../../hooks/useRegisterModal";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
 import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../inputs/Input";
-import { toast } from "react-hot-toast";
-import authApi from "../../apis/auth";
+import { useLogin } from "../../hooks/useAuth";
+import useLoginModal from "../../hooks/useLoginModal";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
-  const registerModal = useRegisterModal();
-  const [isLoading, setIsLoading] = useState(false);
-
+  const login = useLogin();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -25,28 +25,14 @@ const LoginModal = () => {
   });
 
   const onSubmit = useCallback(async (data) => {
-    setIsLoading(true);
     try {
-      const response = await authApi.login(data.email, data.password);
-      console.log(response);
-      if (response?.data?.codeStatus === 200) {
-        toast.success("Login success");
-        loginModal.onClose();
-        window.location.reload()
-      } else {
-        toast.error(response?.data.message);
-      }
+      await login.mutateAsync({ email: data.email, password: data.password });
+      toast.success("Login success");
+      navigate(0);
     } catch (error) {
-      toast.error("An error occurred during login.");
-    } finally {
-      setIsLoading(false);
+      toast.error(error?.response?.data?.message || "An error occurred during login.");
     }
-  }, [loginModal]);
-
-  const toggle = useCallback(() => {
-    loginModal.onClose();
-    registerModal.onOpen();
-  }, [loginModal, registerModal]);
+  }, [login, navigate]);
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -54,7 +40,7 @@ const LoginModal = () => {
       <Input
         id="email"
         label="Email"
-        disabled={isLoading}
+        disabled={login.isLoading}
         register={register}
         errors={errors}
         required
@@ -63,7 +49,7 @@ const LoginModal = () => {
         id="password"
         label="Password"
         type="password"
-        disabled={isLoading}
+        disabled={login.isLoading}
         register={register}
         errors={errors}
         required
@@ -76,9 +62,9 @@ const LoginModal = () => {
       <hr />
       <div className="text-neutral-500 text-center mt-4 font-light">
         <p>
-          First time using Airbnb?{" "}
+          First time using Next?{" "}
           <span
-            onClick={toggle}
+            onClick={login.toggle}
             className="text-neutral-800 cursor-pointer hover:underline"
           >
             Create an account
@@ -90,7 +76,7 @@ const LoginModal = () => {
 
   return (
     <Modal
-      disabled={isLoading}
+      disabled={login.isLoading}
       isOpen={loginModal.isOpen}
       title="Login"
       actionLabel="Continue"

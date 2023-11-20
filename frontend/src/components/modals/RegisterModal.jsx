@@ -6,7 +6,7 @@ import Heading from "../Heading";
 import Input from "../inputs/Input";
 import { toast } from "react-hot-toast";
 import authApi from "../../apis/auth";
-import useLoginModal from "../../hooks/useLoginMoal";
+import useLoginModal from "../../hooks/useLoginModal";
 
 function RegisterModal() {
   const registerModal = useRegisterModal();
@@ -22,13 +22,14 @@ function RegisterModal() {
       username: "",
       email: "",
       password: "",
+      phoneNumber: "",
     },
   });
 
   const onSubmit = useCallback(async (data) => {
     setIsLoading(true);
     try {
-      const response = await authApi.register(data.email, data.username, data.password);
+      const response = await authApi.register(data.email, data.username, data.password, data.phoneNumber);
       if (response?.data?.codeStatus == 200) {
         toast.success("Register success");
         registerModal.onClose();
@@ -53,6 +54,14 @@ function RegisterModal() {
       <Input
         id="email"
         label="Email"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+      <Input
+        id="phoneNumber"
+        label="Phone Number"
         disabled={isLoading}
         register={register}
         errors={errors}

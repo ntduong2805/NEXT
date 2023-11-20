@@ -3,10 +3,11 @@ import { AiOutlineMenu } from "react-icons/ai";
 import Avatar from "../Avatar";
 import MenuItem from "./MenuItem";
 import useRegisterModal from "../../hooks/useRegisterModal";
-import useLoginModal from "../../hooks/useLoginMoal";
+import useLoginModal from "../../hooks/useLoginModal";
 import authApi from "../../apis/auth";
 import useRentModal from "../../hooks/useRentModal";
 import { useNavigate } from "react-router-dom";
+import { useLogout } from "../../hooks/useAuth";
 
 const UserMenu = ({ currentUser }) => {
   const rentModal = useRentModal();
@@ -18,10 +19,7 @@ const UserMenu = ({ currentUser }) => {
     setIsOpen((prev) => !prev);
   };
 
-  const handleCustomSignOut = async () => {
-    await authApi.logout();
-    window.location.href = "/";
-  };
+  const logout = useLogout();
 
   const onRent = useCallback(() => {
     if (!currentUser) {
@@ -48,7 +46,7 @@ const UserMenu = ({ currentUser }) => {
         >
           <AiOutlineMenu />
           <div className="hidden md:block">
-            <Avatar />
+            <Avatar avatar={currentUser?.avatar}/>
           </div>
         </div>
       </div>
@@ -59,16 +57,15 @@ const UserMenu = ({ currentUser }) => {
           <div className="flex flex-col cursor-pointer">
             {currentUser ? (
               <>
-                <MenuItem label="My trips" onClick={() => {navigate("/trips")}} />
-                <MenuItem label="My favorites" onClick={() => {}} />
-                <MenuItem label="My reservations" onClick={() => {}} />
-                <MenuItem label="My properties" onClick={() => {}} />
+                <MenuItem label="My profile" onClick={() => {navigate("/profile")}} />
+                <MenuItem label="My reservations" onClick={() => {navigate("/reservations")}} />
+                <MenuItem label="My properties" onClick={() => {navigate("/properties")}} />
                 <MenuItem
                   label="Next your home"
                   onClick={rentModal.onOpen}
                 />
                 <hr />
-                <MenuItem label="Logout" onClick={() => handleCustomSignOut()} />
+                <MenuItem label="Logout" onClick={() => logout()} />
               </>
             ) : (
               <>
