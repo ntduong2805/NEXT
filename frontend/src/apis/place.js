@@ -33,7 +33,11 @@ const placeApi = {
     deletePlace: async ({placeId}) =>
         http.post("/place/delete",{
             placeId
-        })    
+        }),
+    getPlaceByCategory: async ({ queryKey }) =>
+        http.post("/place/category", {
+            category: queryKey[1]
+        })
     
 }
 export default placeApi

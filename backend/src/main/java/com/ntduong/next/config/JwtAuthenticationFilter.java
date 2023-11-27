@@ -64,12 +64,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
             // Xử lý ngoại lệ khi token hết hạn
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
 
             String errorMessage = "JWT token has expired.";
             String jsonResponse = String.format("{\"timestamp\": \"%s\", \"codeStatus\": %d, \"error\": \"%s\", \"message\": \"%s\", \"path\": \"%s\"}",
-                    new Date(), HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", errorMessage, request.getRequestURI());
+                    new Date(), HttpServletResponse.SC_OK, "Unauthorized", errorMessage, request.getRequestURI());
 
             response.getWriter().write(jsonResponse);
             response.getWriter().flush();

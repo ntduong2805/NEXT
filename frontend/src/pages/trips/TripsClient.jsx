@@ -1,47 +1,47 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import Container from "../../components/Container";
 import Heading from "../../components/Heading";
-import axios from "axios";
-import toast from "react-hot-toast";
-import PlaceCard from "../../components/places/PlaceCard";
-import { useCancelReservation } from "../../hooks/useCancelReservation";
+import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
+import TripTab from "../../components/trips/TripTab";
 
-const TripsClient = ({
-  reservations,
-  currentUser,
-}) => {
-  const [deletingId, setDeletingId] = useState("");
-  
-  const { data, isLoading, mutateAsync, isSuccess } = useCancelReservation(); // Sử dụng hook ở đây
-
-  const onCancel = async (reservationId) => {
-    setDeletingId(reservationId);
-    await mutateAsync(reservationId);
-  };
-
+const TripsClient = () => {
   return (
     <Container>
       <Heading
         title="Trips"
         subtitle="Where you've been and where you're going"
       />
-      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
-        {reservations
-          .sort((a, b) =>
-            new Date(b.createdAt) > new Date(a.createdAt) ? 1 : -1
-          )
-          .map((reservation) => (
-            <PlaceCard
-              key={reservation.reservationId}
-              data={reservation.place}
-              reservation={reservation}
-              actionId={reservation.reservationId}
-              onAction={onCancel}
-              disabled={deletingId === reservation.reservationId}
-              actionLabel="Cancel reservation"
-              currentUser={currentUser}
-            />
-          ))}
+      <div className="mt-10  gap-8">
+        <Tabs>
+          <TabList>
+            <Tab>Upcoming</Tab>
+            <Tab>Confirmed</Tab>
+            <Tab>Operational</Tab>
+            <Tab>Completed</Tab>
+            <Tab>All</Tab>
+          </TabList>
+
+          <TabPanel>
+            <TripTab status={0} />
+            <hr />
+          </TabPanel>
+          <TabPanel>
+            <TripTab status={1} />
+            <hr />
+          </TabPanel>
+          <TabPanel>
+            <TripTab status={2} />
+            <hr />
+          </TabPanel>
+          <TabPanel>
+            <TripTab status={3} showReview/>
+            <hr />
+          </TabPanel>
+          <TabPanel>
+            <TripTab status={5} />
+            <hr />
+          </TabPanel>
+        </Tabs>
       </div>
     </Container>
   );

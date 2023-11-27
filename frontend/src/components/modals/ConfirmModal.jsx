@@ -22,7 +22,7 @@ function ConfirmModal({title, isVisible, onCancel, isCanceling, onConfirm, quest
       footer={footerContent}
     >
       {isCanceling ? (
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="flex justify-center">
           <Spin size="large" />
         </div>
       ) : (

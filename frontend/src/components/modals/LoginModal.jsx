@@ -1,18 +1,25 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../inputs/Input";
 import { useLogin } from "../../hooks/useAuth";
 import useLoginModal from "../../hooks/useLoginModal";
+import useRegisterModal from "../../hooks/useRegisterModal";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
+  const registerModal = useRegisterModal();
   const login = useLogin();
   const navigate = useNavigate();
+  const location = useLocation();
+  const toggle = useCallback(() => {
+    registerModal.onOpen();
+    loginModal.onClose();
+  }, [loginModal, registerModal]);
   const {
     register,
     handleSubmit,
@@ -25,13 +32,7 @@ const LoginModal = () => {
   });
 
   const onSubmit = useCallback(async (data) => {
-    try {
-      await login.mutateAsync({ email: data.email, password: data.password });
-      toast.success("Login success");
-      navigate(0);
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "An error occurred during login.");
-    }
+    await login.mutateAsync({ email: data.email, password: data.password });
   }, [login, navigate]);
 
   const bodyContent = (
@@ -64,7 +65,7 @@ const LoginModal = () => {
         <p>
           First time using Next?{" "}
           <span
-            onClick={login.toggle}
+            onClick={toggle}
             className="text-neutral-800 cursor-pointer hover:underline"
           >
             Create an account

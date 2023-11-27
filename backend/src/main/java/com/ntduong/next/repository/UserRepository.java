@@ -17,6 +17,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     public UserEntity getUserByEmail(String email);
 
     public Optional<UserEntity> findByUsername(String username);
+
     public Optional<UserEntity> findByEmail(String email);
 
 
@@ -29,4 +30,25 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     @Query("UPDATE UserEntity u SET u.avatar = :avatar WHERE u.userId = :userId")
     public void uploadAvatar(@Param("avatar") String avatar, @Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserEntity u SET u.username = :username WHERE u.userId = :userId")
+    public void updateUserName(@Param("username") String username, @Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserEntity u SET u.email = :email, u.isVerifyEmail = 0L WHERE u.userId = :userId")
+    public void updateEmail(@Param("email") String email, @Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserEntity u SET u.phoneNumber = :phoneNumber WHERE u.userId = :userId")
+    public void updatePhoneNumber(@Param("phoneNumber") String phoneNumber, @Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserEntity u SET u.address = :address WHERE u.userId = :userId")
+    public void updateAddress(@Param("address") String address, @Param("userId") Long userId);
+
 }

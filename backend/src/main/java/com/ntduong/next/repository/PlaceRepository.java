@@ -1,6 +1,5 @@
 package com.ntduong.next.repository;
 
-import com.ntduong.next.dto.place.PlaceDto;
 import com.ntduong.next.dto.place.PlaceResDto;
 import com.ntduong.next.entity.PlaceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +15,8 @@ public interface PlaceRepository extends JpaRepository<PlaceEntity, Long> {
     @Query("SELECT p FROM PlaceEntity p ORDER BY p.createddate DESC")
     List<PlaceEntity> getListPlace();
 
+    @Query("SELECT p FROM PlaceEntity p WHERE LOWER(p.category) = LOWER(:category) ORDER BY p.createddate desc")
+    List<PlaceEntity> getPlaceByCategory(@Param("category") String category);
     @Query("SELECT NEW com.ntduong.next.dto.place.PlaceResDto(" +
             "p.placeId, " +
             "p.title, " +
@@ -42,4 +43,6 @@ public interface PlaceRepository extends JpaRepository<PlaceEntity, Long> {
     @Query("SELECT p FROM PlaceEntity p WHERE p.placeId IN :favorites")
     List<PlaceEntity> getListPlaceFavorites(List<Long> favorites);
 
+    @Query("SELECT p.userId FROM PlaceEntity p where p.placeId = :placeId")
+    public Long getUserIdByPlaceId(@Param("placeId") Long placeId);
 }

@@ -2,16 +2,18 @@ package com.ntduong.next.controller.impl;
 
 import com.ntduong.next.constant.ApiConstant;
 import com.ntduong.next.controller.ReservationController;
-import com.ntduong.next.dto.ReservationDateReqDto;
-import com.ntduong.next.dto.ReservationDateResDto;
-import com.ntduong.next.dto.ReservationOwnerResDto;
-import com.ntduong.next.dto.ReservationReqDto;
-import com.ntduong.next.dto.ReservationStatusReqDto;
-import com.ntduong.next.dto.ReservationUserResDto;
+import com.ntduong.next.dto.reservation.ReservationDateReqDto;
+import com.ntduong.next.dto.reservation.ReservationDateResDto;
+import com.ntduong.next.dto.reservation.ReservationOwnerResDto;
+import com.ntduong.next.dto.reservation.ReservationReqDto;
+import com.ntduong.next.dto.reservation.ReservationStatusReqDto;
+import com.ntduong.next.dto.reservation.ReservationUserResDto;
 import com.ntduong.next.entity.ReservationEntity;
+import com.ntduong.next.service.PlaceService;
 import com.ntduong.next.service.ReservationService;
 import com.ntduong.next.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,12 +28,19 @@ public class ReservationControllerImpl implements ReservationController {
     @Autowired
     ReservationService reservationService;
 
+    @Autowired
+    PlaceService placeService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @Override
     @PostMapping(value = ApiConstant.CREATE)
     public Response create(@RequestBody ReservationReqDto reservationDto) {
         long start = System.currentTimeMillis();
         try {
             ReservationEntity res = reservationService.create(reservationDto);
+            Long ownerId = placeService.getOwnerId(reservationDto.getPlaceId());
             return new Response(res, start);
         } catch (Exception e){
             return new Response(ApiConstant.BAD_REQUEST, e.getMessage(), start);
@@ -52,10 +61,10 @@ public class ReservationControllerImpl implements ReservationController {
 
     @Override
     @PostMapping(value = ApiConstant.USER)
-    public Response getReservationByUser() {
+    public Response getReservationByUser(@RequestBody ReservationStatusReqDto reqDto) {
         long start = System.currentTimeMillis();
         try {
-            List<ReservationUserResDto> res =reservationService.getReservationByUser();
+            List<ReservationUserResDto> res =reservationService.getReservationByUser(reqDto);
             return new Response(res, start);
         } catch (Exception e){
             return new Response(ApiConstant.BAD_REQUEST, e.getMessage(), start);

@@ -1,8 +1,8 @@
 import Loading from "../Loading";
 import { MdHome as Home } from "react-icons/md";
 import { AiFillMessage as Speaks } from "react-icons/ai";
-import { useGetReservationByOwner } from "../../hooks/useGetReservationByOwner";
 import ReservationConfirm from "../reservations/ReservationConfirm";
+import { useGetReservationByOwner } from "../../hooks/useReservation";
 const ProfileReservations = ({ currentUser }) => {
   const { data: reservations, isLoading } = useGetReservationByOwner();
   console.log(reservations);

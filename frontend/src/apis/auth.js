@@ -14,7 +14,13 @@ const authApi = {
             password,
             phoneNumber
         }),
-    
+    userProps: async (email, username, phoneNumber, address ) =>
+        http.post("auth//pofile-props", {
+            email,
+            username,
+            phoneNumber,
+            address
+        }),
     profile: async () => 
         http.post('auth/profile', {
             

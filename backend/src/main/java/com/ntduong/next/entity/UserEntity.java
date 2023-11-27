@@ -37,6 +37,7 @@ public class UserEntity implements UserDetails {
     private String avatar;
     private String phoneNumber;
     private Long isVerifyEmail;
+    private String address;
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<Role> roles;

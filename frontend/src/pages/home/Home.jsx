@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import ClientOnly from "../../components/ClientOnly";
+import EmptyState from "../../components/EmptyState";
+import { Spin } from "antd";
+import IndexPage from "../index";
 import Container from "../../components/Container";
 import PlaceCard from "../../components/places/PlaceCard";
-import { useGetListPlace } from "../../hooks/useGetListPlace";
-import Loading from "../../components/Loading";
-import EmptyState from "../../components/EmptyState";
+import { useGetListPlace } from "../../hooks/usePlace";
 
 export default function PlaceItem({
   currentUser
@@ -14,23 +15,28 @@ export default function PlaceItem({
   if (!data && !isLoading) {
     return (
       <ClientOnly>
-        <EmptyState showReset/>
+        <EmptyState showReset />
       </ClientOnly>
-    )
+    );
   }
+
   return (
-    <ClientOnly>
-      <Container>
-        {
-          isLoading ? <Loading /> : <div className="pt-24 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
-          {data.map((place) => {
-            return (
-              <PlaceCard key={place.placeId}  data={place} currentUser={currentUser}/>
-            );
-          })}
-        </div>
-        }
-      </Container>
-    </ClientOnly>
+    <IndexPage>
+      <ClientOnly>
+        <Container>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-screen">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <div className="pt-24 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
+              {data.map((place) => (
+                <PlaceCard key={place.placeId} data={place} currentUser={currentUser} />
+              ))}
+            </div>
+          )}
+        </Container>
+      </ClientOnly>
+    </IndexPage>
   );
 }

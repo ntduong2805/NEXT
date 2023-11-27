@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
-import getCurrentUser from "../../actions/getCurrentUser";
+import React from "react";
 import ClientOnly from "../../components/ClientOnly";
-import EmptyState from "../../components/EmptyState";
 import Navbar from "../../components/navbars/Navbar";
 import LoginModal from "../../components/modals/LoginModal";
 import RentModal from "../../components/modals/RentModal";
 import ToasterProvider from "../../providers/ToasterProvider";
 import RegisterModal from "../../components/modals/RegisterModal";
-import ProfileClient from "./ProfileClient";
 import { useAuth } from "../../hooks/useAuth";
 const ProfilePage = ({ children }) => {
   const {data: currentUser} = useAuth();

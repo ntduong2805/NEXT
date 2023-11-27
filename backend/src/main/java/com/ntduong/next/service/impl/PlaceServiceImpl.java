@@ -1,6 +1,7 @@
 package com.ntduong.next.service.impl;
 
-import com.ntduong.next.dto.place.PlaceDto;
+import com.ntduong.next.dto.place.PlaceCategoryReqDto;
+import com.ntduong.next.dto.place.PlaceCreateReqDto;
 import com.ntduong.next.dto.place.PlaceGetReqDto;
 import com.ntduong.next.dto.place.PlaceResDto;
 import com.ntduong.next.entity.ImageEntity;
@@ -33,19 +34,19 @@ public class PlaceServiceImpl implements PlaceService {
     private UserFavoriteRepository userFavoriteRepository;
 
     @Override
-    public void create(PlaceDto createDto) {
+    public void create(PlaceCreateReqDto createDto) {
         checkValidate(createDto);
         try {
             PlaceEntity placeEntity = new PlaceEntity();
-            placeEntity.setAddress(createDto.getAddress());
+            placeEntity.setAddress(createDto.getAddress().trim());
             placeEntity.setCategory(createDto.getCategory());
             placeEntity.setBathroomCount(createDto.getBathroomCount());
-            placeEntity.setDescription(createDto.getDescription());
+            placeEntity.setDescription(createDto.getDescription().trim());
             placeEntity.setGuestCount(createDto.getGuestCount());
             placeEntity.setLocation(createDto.getLocation());
             placeEntity.setPrice(Long.parseLong(createDto.getPrice()));
             placeEntity.setRoomCount(createDto.getRoomCount());
-            placeEntity.setTitle(createDto.getTitle());
+            placeEntity.setTitle(createDto.getTitle().trim());
             placeEntity.setCreateddate(CommonDateUtil.getSystemDateTime());
             placeEntity.setUserId(UserProfileUtils.getUserId());
             PlaceEntity createEntity = placeRepository.save(placeEntity);
@@ -64,16 +65,9 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public List<PlaceDto> getListPlace() {
+    public List<PlaceResDto> getListPlace() {
         List<PlaceEntity> placeEntities = placeRepository.getListPlace();
-        return placeEntities.stream().map(placeEntity -> {
-            PlaceDto placeDto = new PlaceDto();
-            BeanUtils.copyProperties(placeEntity, placeDto);
-            placeDto.setPrice(placeEntity.getPrice().toString());
-            List<String> imgSrc = imageRepository.getUrlByPlaceId(placeEntity.getPlaceId());
-            placeDto.setImageSrc(imgSrc);
-            return placeDto;
-        }).collect(Collectors.toList());
+        return setPlaceResDtos(placeEntities);
     }
 
     @Override
@@ -91,42 +85,52 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public List<PlaceDto> getListPlaceByOwner() {
+    public List<PlaceResDto> getListPlaceByOwner() {
         List<PlaceEntity> placeEntities = placeRepository.getListPlaceByOwner(UserProfileUtils.getUserId());
-        return placeEntities.stream().map(placeEntity -> {
-            PlaceDto placeDto = new PlaceDto();
-            BeanUtils.copyProperties(placeEntity, placeDto);
-            placeDto.setPrice(placeEntity.getPrice().toString());
-            List<String> imgSrc = imageRepository.getUrlByPlaceId(placeEntity.getPlaceId());
-            placeDto.setImageSrc(imgSrc);
-            return placeDto;
-        }).collect(Collectors.toList());
+        return setPlaceResDtos(placeEntities);
     }
 
     @Override
-    public List<PlaceDto> getListPlaceFavorite() {
+    public List<PlaceResDto> getListPlaceFavorite() {
         List<Long> favorites = userFavoriteRepository.getPlaceIdByUserId(UserProfileUtils.getUserId());
         List<PlaceEntity> lstPlace = placeRepository.getListPlaceFavorites(favorites);
-        return lstPlace.stream().map(placeEntity -> {
-            PlaceDto placeDto = new PlaceDto();
-            BeanUtils.copyProperties(placeEntity, placeDto);
-            placeDto.setPrice(placeEntity.getPrice().toString());
-            List<String> imgSrc = imageRepository.getUrlByPlaceId(placeEntity.getPlaceId());
-            placeDto.setImageSrc(imgSrc);
-            return placeDto;
-        }).collect(Collectors.toList());
+        return setPlaceResDtos(lstPlace);
     }
 
     @Override
-    public void deletePlace(PlaceDto placeDto) {
+    public void deletePlace(PlaceGetReqDto placeDto) {
         if (ObjectUtils.isEmpty(placeDto.getPlaceId())){
             throw new DetailException("Place Id is not null");
         }
         placeRepository.deleteById(placeDto.getPlaceId());
     }
 
+    @Override
+    public List<PlaceResDto> getPlaceCategory(PlaceCategoryReqDto reqDto) {
+        if (ObjectUtils.isEmpty(reqDto.getCategory())) {
+            throw new DetailException("Category is null");
+        }
+        List<PlaceEntity> placeEntities = placeRepository.getPlaceByCategory(reqDto.getCategory());
+        return setPlaceResDtos(placeEntities);
+    }
 
-    private void checkValidate(PlaceDto req) {
+    @Override
+    public Long getOwnerId(Long placeId) {
+        return placeRepository.getUserIdByPlaceId(placeId);
+    }
+
+    private List<PlaceResDto> setPlaceResDtos(List<PlaceEntity> placeEntities) {
+        return placeEntities.stream().map(placeEntity -> {
+            PlaceResDto placeDto = new PlaceResDto();
+            BeanUtils.copyProperties(placeEntity, placeDto);
+            List<String> imgSrc = imageRepository.getUrlByPlaceId(placeEntity.getPlaceId());
+            placeDto.setImageSrc(imgSrc);
+            return placeDto;
+        }).collect(Collectors.toList());
+    }
+
+
+    private void checkValidate(PlaceCreateReqDto req) {
         if (ObjectUtils.isEmpty(req.getAddress())){
             throw new DetailException("Address is not null");
         }

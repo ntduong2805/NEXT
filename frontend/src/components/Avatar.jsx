@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "./Image";
 
-const Avatar = ({ avatar }) => {
+const Avatar = ({ avatar, size }) => {
   const avatarStyle = {
     borderRadius: "50%", 
     objectFit: "cover",  
@@ -15,6 +15,8 @@ const Avatar = ({ avatar }) => {
       alt="Avatar"
       src={avatar ? avatar : "/images/placeholder.jpg"}
       style={avatarStyle}
+      width={size}
+      height={size}
     />
   );
 };

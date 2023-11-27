@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import Container from "../../components/Container";
 import Heading from "../../components/Heading";
 import PlaceCard from "../../components/places/PlaceCard";
-import { useDeletePlace } from "../../hooks/useDeletePlace";
+import { useDeletePlace } from "../../hooks/usePlace";
 
 const PropertiesClient = ({ places, currentUser }) => {
   const [deletingId, setDeletingId] = useState("");

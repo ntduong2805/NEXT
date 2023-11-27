@@ -15,5 +15,6 @@ public class UserResDto {
     private String email;
     private String avatar;
     private String phoneNumber;
-    private Long isVerified;
+    private String address;
+    private Long isVerifyEmail;
 }

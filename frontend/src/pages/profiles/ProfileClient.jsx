@@ -1,23 +1,22 @@
 import "react-tabs/style/react-tabs.css";
-import ProfileSettings from "../../components/profiles/ProfileSettings";
-import UserProfileInfo from "../../components/UserProfileInfo";
 import { useNavigate } from "react-router-dom";
 import ProfilePage from ".";
 import { useAuth } from "../../hooks/useAuth";
+import ProfileInfo from "../../components/profiles/ProfileInfo";
 
 const ProfileClient = () => {
   const {data: currentUser } = useAuth();
   const navigate = useNavigate();
   return (
     <ProfilePage>
-      <div className="md:px-40 p-12 grid md:grid-cols-6 lg:grid-cols-7 gap-x-10 sm:mb-4 gap-2">
-        <div className="bg-white rounded-xl md:h-auto h-[auto] max-h-[510px] md:w-[280px] mb-8 md:mb-0 md:col-span-2 lg:col-span-2">
-          <UserProfileInfo currentUser={currentUser} />
+      <div className="px-20 md:px-30 lg:pl-40 lg:pr-30 grid xs:grid-cols-5 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-5 gap-x-10 sm:mb-4 gap-5">
+        <div className="bg-white rounded-xl max-h-[360px] md:w-[220px] mb-8 md:mb-0 sm:col-span-2 md:col-span-1 lg:col-span-1">
+          <ProfileInfo currentUser={currentUser} />
         </div>
-        <div className="bg-white mt-8 p-8 rounded-xl md:col-span-4 lg:col-span-5">
-          <div className="space-y-4 pl-4 pb-4 border-b-[1px]">
-            <h1 className="text-4xl font-semibold">
-              Hi, I'm {currentUser?.username}
+        <div className="bg-white mt-20 md:mt-5 md:ml-20 rounded-xl sm:col-span-2 md:col-span-2 lg:col-span-4">
+          <div className="space-y-2 pl-4 pb-4 border-b-[1px]">
+            <h1 className="text-lg md:text-2xl font-semibold">
+             Information about {currentUser?.username}
             </h1>
             <h6 className="text-sm text-gray-600">Joined in</h6>
             <div className="line-height-0">

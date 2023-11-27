@@ -5,14 +5,14 @@ import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../inputs/Input";
 import { toast } from "react-hot-toast";
-import authApi from "../../apis/auth";
 import useLoginModal from "../../hooks/useLoginModal";
+import { useRegister } from "../../hooks/useAuth";
 
 function RegisterModal() {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
-
+  const registerHook = useRegister();
   const {
     register,
     handleSubmit,
@@ -27,20 +27,7 @@ function RegisterModal() {
   });
 
   const onSubmit = useCallback(async (data) => {
-    setIsLoading(true);
-    try {
-      const response = await authApi.register(data.email, data.username, data.password, data.phoneNumber);
-      if (response?.data?.codeStatus == 200) {
-        toast.success("Register success");
-        registerModal.onClose();
-      } else {
-        toast.error(response?.data.message);
-      }
-    } catch (error) {
-      toast.error("An error occurred during registration.");
-    } finally {
-      setIsLoading(false); // Đảm bảo rằng isLoading sẽ luôn được thiết lập lại thành false.
-    }
+      await registerHook.mutateAsync(data);
   }, [registerModal]);
 
   const toggle = useCallback(() => {

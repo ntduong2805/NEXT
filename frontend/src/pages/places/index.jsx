@@ -8,11 +8,11 @@ import LoginModal from "../../components/modals/LoginModal";
 import RentModal from "../../components/modals/RentModal";
 import ToasterProvider from "../../providers/ToasterProvider";
 import RegisterModal from "../../components/modals/RegisterModal";
-import { useGetPlace } from "../../hooks/useGetPlace";
 import Loading from "../../components/Loading";
 import Footer from "../../components/Footer";
 import PlaceClient from "./PlaceClient";
 import { useAuth } from "../../hooks/useAuth";
+import { useGetPlace } from "../../hooks/usePlace";
 const PlacePage = () => {
   const { placeId } = useParams();
   const { data, isLoading } = useGetPlace(placeId);
@@ -23,7 +23,7 @@ const PlacePage = () => {
       <RentModal />
       <LoginModal />
       <RegisterModal />
-      <Navbar currentUser={currentUser} />
+      <Navbar currentUser={currentUser} showSearch showRentModal/>
       {isLoading ? (
         <Loading />
       ) : (

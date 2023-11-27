@@ -38,7 +38,7 @@ public class JwtServiceImpl {
                 .builder()
                 .setClaims(extractClaims)
                 .setSubject(email)
-                .setExpiration(new Date(System.currentTimeMillis() + 3600*1000))
+                .setExpiration(new Date(System.currentTimeMillis() + 3600L *1000*24*30))
                 .signWith(SignatureAlgorithm.HS256, Keys.hmacShaKeyFor(Decoders.BASE64.decode(JWT_KEY)))
                 .compact();
     }

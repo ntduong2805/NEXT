@@ -6,8 +6,10 @@ const reservationApi = {
         http.post("/reservation/place", {
             placeId: queryKey[1]
         }),
-    getReservationByUser: async () =>
-        http.post("/reservation/user"),
+    getReservationByUser: async ({ queryKey }) =>
+        http.post("/reservation/user", {
+            status: queryKey[1]
+        }),
 
     getReservationByOwner: async ({ queryKey }) =>
         http.post("/reservation/owner", {

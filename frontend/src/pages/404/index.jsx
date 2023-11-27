@@ -1,8 +1,9 @@
 import React from 'react'
+import EmptyState from '../../components/EmptyState'
 
 function NotFound() {
   return (
-    <div>NotFound</div>
+    <EmptyState showHome={true}/>
   )
 }
 

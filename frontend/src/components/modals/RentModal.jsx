@@ -3,17 +3,16 @@ import Modal from "./Modal";
 import Heading from "../Heading";
 import { categories } from "../navbars/Categories";
 import CategoryInput from "../inputs/CategoryInput";
-import CountrySelect from "../inputs/CountrySelect";
-import Map from "../Map";
 import useRentModal from "../../hooks/useRentModal";
 import ImageUpload from "../inputs/ImageUpload";
 import Counter from "../inputs/Counter";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { useCreatePlace } from "../../hooks/useCreatePlace";
-import { Form, Input } from "antd";
 import { Spin } from "antd";
-import { GoogleMap, LoadScript, Autocomplete } from '@react-google-maps/api';
+import CountrySelect from "../inputs/CountrySelect";
+import Map from "../Map";
+import TextArea from "antd/es/input/TextArea";
+import Input from "../inputs/Input";
+import { useCreatePlace } from "../../hooks/usePlace";
 const STEPS = {
   CATEGORY: 0,
   LOCATION: 1,
@@ -44,7 +43,6 @@ const RentModal = () => {
     formState: { errors },
     resđet,
   } = useForm();
-  const navigate = useNavigate();
   const { data, isLoading, mutateAsync, isSuccess } = useCreatePlace();
 
   const setCustomValue = (id, value) => {
@@ -167,44 +165,21 @@ const RentModal = () => {
   );
 
   if (step === STEPS.LOCATION) {
-    const [mapCenter, setMapCenter] = useState(formData.location?.latlng);
-    const { isLoaded, loadError } = useLoadScript({
-      googleMapsApiKey: "AIzaSyDniGYXtG1h35uDOOTHalPy3hR34vhQVIU",
-      libraries: ["places"],
-    });
-
-    if (loadError) return "Error loading maps";
-    if (!isLoaded) return "Loading Maps...";
-
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
           title="Where is your place located?"
           subtitle="Help guests find you!"
         />
-        <LoadScript
-          googleMapsApiKey="AIzaSyDniGYXtG1h35uDOOTHalPy3hR34vhQVIU"
-          libraries={["places"]}
-        >
-          <Autocomplete
-            onLoad={(autocomplete) => {
-              console.log('Autocomplete loaded:', autocomplete);
-            }}
-            onPlaceChanged={() => handlePlaceSelect(autocomplete.getPlace())}
-          >
-            <input
-              type="text"
-              placeholder="Enter your location"
-            />
-          </Autocomplete>
-          <GoogleMap
-            mapContainerStyle={mapStyles}
-            center={mapCenter}
-            zoom={mapZoom}
-          >
-            {/* You can customize the map further if needed */}
-          </GoogleMap>
-        </LoadScript>
+        <CountrySelect
+          value={formData.location}
+          onChange={(value) => setCustomValue("location", value)}
+        />
+        <Map
+          center={formData.location?.latlng}
+          zoom={mapZoom}
+          key={formData.location?.latlng}
+        />
       </div>
     );
   }
@@ -261,21 +236,8 @@ const RentModal = () => {
           title="Describe your place to guests"
           subtitle="Tell guests what makes your place unique"
         />
-        <Form
-          name="complex-form"
-          labelCol={{
-            span: 4,
-          }}
-          wrapperCol={{
-            span: 20,
-          }}
-          labelAlign="top"
-          style={{
-            maxWidth: 600,
-          }}
-        >
-          <Form.Item label="Title" name="title">
             <Input
+            label="Title" name="title"
               id="title"
               disabled={isLoading}
               register={register}
@@ -288,10 +250,8 @@ const RentModal = () => {
             {errors.title && (
               <span className="text-red-500">Title is required</span>
             )}
-          </Form.Item>
-          
-          <Form.Item label="Address" name="address">
             <Input
+            label="Address" name="price"
               id="address"
               disabled={isLoading}
               register={register}
@@ -304,11 +264,10 @@ const RentModal = () => {
             {errors.address && (
               <span className="text-red-500">Address is required</span>
             )}
-          </Form.Item>
-          
-          <Form.Item label="Description" name="description">
             <Input
+            label="Decription" name="decription"
               id="description"
+              type="text"
               disabled={isLoading}
               register={register}
               isTextArea={true}
@@ -322,14 +281,13 @@ const RentModal = () => {
             {errors.description && (
               <span className="text-red-500">Description is required</span>
             )}
-          </Form.Item>
           
           <Heading
             title="How much do you want to charge?"
             subtitle="Set a price per night"
           />
-          <Form.Item label="Price" name="price">
             <Input
+            label="Price" name="price"
               type="number"
               prefix="$"
               id="price"
@@ -344,8 +302,6 @@ const RentModal = () => {
             {errors.price && (
               <span className="text-red-500">Price is required</span>
             )}
-          </Form.Item>
-        </Form>
       </div>
     );
   }
@@ -355,6 +311,7 @@ const RentModal = () => {
 
   return (
     <Modal
+      centered
       isOpen={rentModal.isOpen}
       onClose={rentModal.onClose}
       onSubmit={handleSubmit(onSubmit)}

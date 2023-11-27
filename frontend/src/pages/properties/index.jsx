@@ -7,11 +7,10 @@ import LoginModal from "../../components/modals/LoginModal";
 import RentModal from "../../components/modals/RentModal";
 import ToasterProvider from "../../providers/ToasterProvider";
 import RegisterModal from "../../components/modals/RegisterModal";
-
 import Loading from "../../components/Loading";
-import { useGetListPlaceByOwner } from "../../hooks/useGetListPlaceByOwner";
 import PropertiesClient from "./PropertiesClient";
 import { useAuth } from "../../hooks/useAuth";
+import { useGetListPlaceByOwner } from "../../hooks/usePlace";
 const PropertiesPage = () => {
   const { data: currentUser } = useAuth();
   const { data: places, isLoading } = useGetListPlaceByOwner();

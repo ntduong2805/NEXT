@@ -1,4 +1,3 @@
-
 import { getToken, removeItem, setToken } from "../utils/authentication";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -7,7 +6,6 @@ import toast from "react-hot-toast";
 import useLoginModal from "./useLoginModal";
 import useRegisterModal from "./useRegisterModal";
 
-
 export const parseJwt = (token) => {
   try {
     return JSON.parse(atob(token.split(".")[1]));
@@ -15,14 +13,13 @@ export const parseJwt = (token) => {
     return null;
   }
 };
+const key = "getUser";
 
 export const useGetUser = () => {
-  const token = getToken();
-
-  return useQuery(["getUser"], authApi.profile, {
-    enabled: token !== null && parseJwt(token)?.exp * 1000 > Date.now(),
-    cacheTime: token ? 24 * 60 * 60 * 1000 : 0,
-    staleTime: 60 * 60 * 1000, // 60 phút
+  return useQuery([key], authApi.profile, {
+    enabled: getToken() !== null,
+    cacheTime: 7 * 24 * 60 * 60 * 1000, // 1 day
+    staleTime: 24 * 60 * 60 * 1000, // 60 minutes
     onError: () => {
       removeItem();
     },
@@ -30,55 +27,35 @@ export const useGetUser = () => {
 };
 
 export const useAuth = () => {
-  const navigate = useNavigate();
-  const token = getToken();
-
-  if (token === null) {
-    // Token không tồn tại
-    return {
-      isAuthenticated: false,
-      data: null,
-      isAdmin: false,
-    };
-  }
-
-  const decodedJwt = parseJwt(token);
-
-  if (decodedJwt?.exp * 1000 < Date.now()) {
-    // Token hết hạn
-    removeItem();
-    navigate("/");
-    return {
-      isAuthenticated: false,
-      data: null,
-      isAdmin: false,
-    };
-  }
-
   const query = useGetUser();
 
   return {
-    isAuthenticated: true,
+    isAuthenticated: getToken() !== null,
     ...query,
     data: query.data?.data?.data,
-    isAdmin: query.data?.data?.data?.role === "admin",
+    isAdmin: false,
   };
 };
 
-
 export const useLogin = () => {
+  const loginModal = useLoginModal();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const queryClient = useQueryClient();
   const loginMutation = useMutation(
     (payload) => authApi.login(payload.email, payload.password),
     {
       onSuccess: (response) => {
-        setToken(response.data.data.token);
-        navigate(location.state?.from || "/");
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.message);
+        if (response?.data?.codeStatus === 200) {
+          toast.success("Login successful");
+          loginModal.onClose();
+          queryClient.invalidateQueries("getUser");
+          navigate(location.state?.from || "/");
+        } else {
+          const message = response?.data?.message;
+          console.log(message);
+          toast.error(message);
+        }
       },
     }
   );
@@ -93,29 +70,122 @@ export const useLogout = () => {
     onSuccess: () => {
       removeItem();
       queryClient.resetQueries();
-      navigate("/");
+      toast.success("Logout successful");
+      navigate(location.state?.from || "/");
     },
   });
+
   const { mutate } = mutateLogout;
+
+  // You can use getUserQuery.data to access user information if needed
+
   return mutate;
 };
 export const useRegister = () => {
-  const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
-
+  const loginModal = useLoginModal();
   const registerMutation = useMutation(
-    (payload) => authApi.register(payload),
+    (payload) =>
+      authApi.register(
+        payload.email,
+        payload.username,
+        payload.phoneNumber,
+        payload.password
+      ),
     {
       onSuccess: (response) => {
-        toast.success("Registration successful");
-        registerModal.onClose()
-        loginModal.onOpen();
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.message || "An error occurred during registration.");
+        if (response?.data?.codeStatus === 200) {
+          toast.success("Registration successful");
+          navigate(location.state?.from || "/");
+          registerModal.onClose();
+          loginModal.onOpen();
+        } else {
+          const message = response?.data?.message;
+          console.log(message);
+          toast.error(message);
+        }
       },
     }
   );
 
   return registerMutation;
 };
+
+export const useUserProps = () => {
+  const queryClient = useQueryClient();
+  const userPops = useMutation((payload) => authApi.userProps(payload), {
+    onSuccess: (response) => {
+      toast.success("Update Successfully");
+      queryClient.invalidateQueries("getUser");
+    },
+    onError: (response) => {
+      console.log(response);
+      toast.error(
+        response?.data?.message || "An error occurred during update."
+      );
+    },
+  });
+  return userPops;
+};
+
+export const useGetUserById = (userId) => {
+  const query = useQuery(["getUserById", userId], authApi.getUserById);
+  return {
+      ...query,
+      data: query?.data?.data?.data
+  };
+}
+
+export const useUploadAvatar = () => {
+  const queryClient = useQueryClient();
+  const uploadAvatarMutation = useMutation(
+      (data) => authApi.uploadAvatar({
+          avatar: data
+      }),
+      {
+          onSuccess: (response) => {
+              
+              if (response?.data?.codeStatus === 200) {
+                  toast.success("Uploaded successfully");
+                  queryClient.invalidateQueries("getUser");
+              } else {
+                  const message = response?.data?.message;
+                  console.log(message);
+                  toast.error(message);
+                }
+          },
+      }
+  )
+  return {
+      ...uploadAvatarMutation
+  }
+}
+
+export const useSendOTP = () => {
+  const sendOTPMutation = useMutation(
+      () => authApi.sendOTP(),
+  )
+  return {
+      ...sendOTPMutation
+  }
+}
+
+export const useVerifyOTP = () => {
+  const verifyOTPMutation = useMutation(
+      (data) => authApi.verifyOTP({
+          otpCode: data
+      }),
+      {
+          onSuccess: (response) => {
+              if (response?.data?.codeStatus === 200 && response?.data?.data === true){
+                  toast.success("Successfully verified OTP");
+              } else {
+                  toast.error("OTP code is incorrect");
+              }
+          },
+      }
+  )
+  return {
+      ...verifyOTPMutation
+  }
+}

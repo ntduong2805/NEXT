@@ -11,6 +11,7 @@ function Input({
   errors,
   isTextArea,
   isPriceInput,
+  onChange,
 }) {
   const isRequired = isPriceInput; // Kiểm tra isPriceInput
 
@@ -26,6 +27,7 @@ function Input({
           {...register(id, { required: isRequired })} // Đã thay đổi ở đây
           placeholder=""
           rows={4}
+          onChange={onChange}
           className={`w-full p-4 pt-8 font-light bg-white border-2 rounded-md outline-none transition ${
             formatPrice && isPriceInput ? 'pl-9' : 'pl-4'
           } ${errors[id] ? 'border-rose-500 focus-border-rose-500' : 'border-neutral-300 focus-border-black'} ${
@@ -39,6 +41,7 @@ function Input({
           {...register(id, { required: isRequired })} // Đã thay đổi ở đây
           placeholder=""
           type={type}
+          onChange={onChange}
           className={`w-full p-4 pt-8 font-light bg-white border-2 rounded-md outline-none transition ${
             formatPrice && isPriceInput ? 'pl-9 p-5' : 'pl-4'
           } ${errors[id] ? 'border-rose-500 focus-border-rose-500' : 'border-neutral-300 focus-border-black'} ${

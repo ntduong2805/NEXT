@@ -2,7 +2,8 @@ package com.ntduong.next.controller.impl;
 
 import com.ntduong.next.constant.ApiConstant;
 import com.ntduong.next.controller.PlaceController;
-import com.ntduong.next.dto.place.PlaceDto;
+import com.ntduong.next.dto.place.PlaceCategoryReqDto;
+import com.ntduong.next.dto.place.PlaceCreateReqDto;
 import com.ntduong.next.dto.place.PlaceGetReqDto;
 import com.ntduong.next.dto.place.PlaceResDto;
 import com.ntduong.next.service.PlaceService;
@@ -26,7 +27,7 @@ public class PlaceControllerImpl implements PlaceController {
     private PlaceService placeService;
     @Override
     @PostMapping(value = ApiConstant.CREATE)
-    public Response create(@RequestBody PlaceDto createDto) {
+    public Response create(@RequestBody PlaceCreateReqDto createDto) {
         long start = System.currentTimeMillis();
         try {
             placeService.create(createDto);
@@ -41,7 +42,7 @@ public class PlaceControllerImpl implements PlaceController {
     public Response getListPlace() {
         long start = System.currentTimeMillis();
         try {
-            List<PlaceDto> res = placeService.getListPlace();
+            List<PlaceResDto> res = placeService.getListPlace();
             return new Response(res, start);
         } catch (Exception e){
             return new Response(ApiConstant.BAD_REQUEST, e.getMessage(), start);
@@ -65,7 +66,7 @@ public class PlaceControllerImpl implements PlaceController {
     public Response getListPlaceByOwner() {
         long start = System.currentTimeMillis();
         try {
-            List<PlaceDto> res = placeService.getListPlaceByOwner();
+            List<PlaceResDto> res = placeService.getListPlaceByOwner();
             return new Response(res, start);
         } catch (Exception e){
             return new Response(ApiConstant.BAD_REQUEST, e.getMessage(), start);
@@ -77,7 +78,7 @@ public class PlaceControllerImpl implements PlaceController {
     public Response getListPlaceFavorites() {
         long start = System.currentTimeMillis();
         try {
-            List<PlaceDto> res = placeService.getListPlaceFavorite();
+            List<PlaceResDto> res = placeService.getListPlaceFavorite();
             return new Response(res, start);
         } catch (Exception e){
             return new Response(ApiConstant.BAD_REQUEST, e.getMessage(), start);
@@ -86,13 +87,25 @@ public class PlaceControllerImpl implements PlaceController {
 
     @Override
     @PostMapping(value = ApiConstant.DELETE)
-    public Response deletePlace(@RequestBody PlaceDto placeDto) {
+    public Response deletePlace(@RequestBody PlaceGetReqDto placeDto) {
         long start = System.currentTimeMillis();
         try {
             placeService.deletePlace(placeDto);
             return new Response(SUCCESS, start);
         } catch (Exception e){
             return new Response(FAIL, start);
+        }
+    }
+
+    @Override
+    @PostMapping(value = ApiConstant.GET_LIST_BY_CATEGORY)
+    public Response getPlaceByCategory(@RequestBody PlaceCategoryReqDto reqDto) {
+        long start = System.currentTimeMillis();
+        try {
+            List<PlaceResDto> res = placeService.getPlaceCategory(reqDto);
+            return new Response(res, start);
+        } catch (Exception e){
+            return new Response(ApiConstant.BAD_REQUEST, e.getMessage(), start);
         }
     }
 }

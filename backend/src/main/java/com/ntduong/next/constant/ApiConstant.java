@@ -9,6 +9,8 @@ public class ApiConstant {
     public static final String CREATE = "/create";
     public static final String UPDATE = "/update";
     public static final String GET_LIST = "/get-list";
+
+    public static final String GET_LIST_BY_CATEGORY = "/category";
     public static final String GET = "/get";
     public static final String GET_LIST_OWNER = "/get-list-owner";
     public static final String GET_LIST_FAVORITES = "/get-list-favorites";
@@ -36,5 +38,11 @@ public class ApiConstant {
     public static final String VERIFY_OTP = "/verify-otp";
 
     public static final String UPLOAD_AVATAR = "/upload-avatar";
+    public static final String PROFILE_PROPS = "/pofile-props";
 
+    public static final String REVIEW = "/review";
+
+    public static final String GET_REVIEW_BY_USER_CREATE = "/get-review-by-user-create";
+
+    public static final String GET_REVIEW_BY_PLACE = "/get-reviews-by-place";
 }

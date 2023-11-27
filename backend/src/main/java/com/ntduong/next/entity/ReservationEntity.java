@@ -30,14 +30,20 @@ public class ReservationEntity {
     private Long nightCount;
     private Long guestCount;
     private Double totalPrice;
-    /*
+    /**
     * Status Reservation
-    * 0: pending chờ xác nhận
-    * 1: confirmed đã xác nhận
-    * 2: cancelled bị hủy
-    * 3: completed hoàn thành
+    * @0: pending chờ xác nhận
+    * @1: confirmed đã xác nhận
+    * @2: cancelled bị hủy
+    * @3: completed hoàn thành
     * */
     private Long status;
+    /**
+     * Status Review
+     * @0: true
+     * @1: false
+     * */
+    private Long isReview;
     private Date createddate;
     private String createdby;
     private Date updateddate;

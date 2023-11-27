@@ -1,31 +1,22 @@
-import React, { useCallback } from "react"; // Import React and useCallback from 'react'
+import React, { useCallback } from "react";
 import qs from "query-string";
+import { useNavigate } from "react-router-dom";
 
 const CategoryBox = ({ label, icon: Icon, selected }) => {
+  const navigate = useNavigate();
+
   const handleClick = useCallback(() => {
-    let currentQuery = {};
-
-    // Use the built-in URLSearchParams object to get query parameters
-    const params = new URLSearchParams(window.location.search);
-
-    if (params) {
-      currentQuery = Object.fromEntries(params.entries());
-    }
-
-    const updateQuery = {
-      ...currentQuery,
-      category: label.toLowerCase(),
-    };
-
-    if (params.get("category") === label.toLowerCase()) {
-      delete updateQuery.category;
-    }
-
-    const queryString = qs.stringify(updateQuery, { skipNull: true });
-    const url = `/?${queryString}`;
-
-    window.history.pushState(null, null, url);
-  }, [label]);
+    // Convert label to lowercase
+    const lowerCaseLabel = label.toLowerCase();
+  
+    // Construct the URL with the lowercase label as a query parameter
+    const url = `/category/${lowerCaseLabel}`;
+  
+    // Use qs.stringify to handle URL encoding for the label if needed
+  
+    // Navigate to the constructed URL
+    navigate(`${url}`);
+  }, [label, navigate]);
 
   return (
     <div

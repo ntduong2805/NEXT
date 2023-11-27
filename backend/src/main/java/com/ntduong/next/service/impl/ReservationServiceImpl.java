@@ -1,12 +1,12 @@
 package com.ntduong.next.service.impl;
 
 
-import com.ntduong.next.dto.ReservationDateReqDto;
-import com.ntduong.next.dto.ReservationDateResDto;
-import com.ntduong.next.dto.ReservationOwnerResDto;
-import com.ntduong.next.dto.ReservationReqDto;
-import com.ntduong.next.dto.ReservationStatusReqDto;
-import com.ntduong.next.dto.ReservationUserResDto;
+import com.ntduong.next.dto.reservation.ReservationDateReqDto;
+import com.ntduong.next.dto.reservation.ReservationDateResDto;
+import com.ntduong.next.dto.reservation.ReservationOwnerResDto;
+import com.ntduong.next.dto.reservation.ReservationReqDto;
+import com.ntduong.next.dto.reservation.ReservationStatusReqDto;
+import com.ntduong.next.dto.reservation.ReservationUserResDto;
 import com.ntduong.next.entity.ReservationEntity;
 import com.ntduong.next.exception.DetailException;
 import com.ntduong.next.repository.ReservationRepository;
@@ -18,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +30,8 @@ public class ReservationServiceImpl implements ReservationService {
     public static final Long CHECKIN_STATUS = 2L;
     public static final Long CHECKOUT_STATUS = 3L;
     public static final Long CANCEL_STATUS = 4L;
+
+    public static final Long GET_ALL = 5L;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -71,9 +74,15 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationUserResDto> getReservationByUser() {
+    public List<ReservationUserResDto> getReservationByUser(ReservationStatusReqDto reqDto) {
+        List<Long> status = new ArrayList<>();
+        if (GET_ALL.equals(reqDto.getStatus())) {
+            status.add(PENDING_STATUS); status.add(CONFIRM_STATUS); status.add(CHECKIN_STATUS); status.add(CHECKOUT_STATUS); status.add(CANCEL_STATUS);
+        } else {
+            status.add(reqDto.getStatus());
+        }
         Long userId = UserProfileUtils.getUserId();
-        return reservationRepository.getReservationByUserId(userId, 1L);
+        return reservationRepository.getReservationByUserId(userId, status,1L);
 
     }
     public void setStatusReservation(ReservationReqDto reservationDto, Long status) {
@@ -136,6 +145,11 @@ public class ReservationServiceImpl implements ReservationService {
         } catch (Exception e) {
             throw new DetailException(e.getMessage());
         }
+    }
+
+    @Override
+    public void updateIsReview(Long reservationId) {
+        reservationRepository.updateIsReview(reservationId);
     }
 
 

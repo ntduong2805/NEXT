@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v2/auth/get-user", "/api/v2/auth/login", "/api/v2/auth/register", "/api/v2/place/get-list", "/api/v2/place/get", "/api/v2/reservation/place", "/api/v2/auth/clear-cache").permitAll()
+                .antMatchers("/api/v2/auth/get-user", "/api/v2/auth/login", "/api/v2/auth/register", "/api/v2/place/get-list", "/api/v2/place/get", "/api/v2/reservation/place", "/api/v2/auth/clear-cache", "/api/v2/review/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()

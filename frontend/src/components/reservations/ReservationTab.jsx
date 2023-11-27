@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { useGetReservationByOwner } from "../../hooks/useGetReservationByOwner";
-import { useCancelReservation } from "../../hooks/useCancelReservation";
 import { Button, Image, Table, Tag, Spin, Modal } from "antd";
 import ConfirmModal from "../modals/ConfirmModal";
-import { useReservationStatusChange } from "../../hooks/useReservationStatusChange";
 import { useMemo } from "react";
+import { useCancelReservation, useGetReservationByOwner, useReservationStatusChange } from "../../hooks/useReservation";
 
 const ReservationTab = ({ status, statusChange }) => {
   const { data: reservations, isLoading, refetch } = useGetReservationByOwner(status);
@@ -146,20 +144,17 @@ const ReservationTab = ({ status, statusChange }) => {
   ];
 
   return (
-    <div>
+    <div className="px-4">
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
         <Button onClick={refetchData} disabled={isRefetching}>
-          Refetch Data
+          Refresh
         </Button>
-        {isRefetching && (
-          <Spin size="large" className="text-blue-500" style={{ marginRight: "16px" }} />
-        )}
       </div>
       <Table
         columns={columns}
         dataSource={reservations}
         rowKey="reservationId"
-        loading={isLoading} // Sử dụng isLoading cho Spin trong Table
+        loading={isLoading || isRefetching} // Sử dụng isLoading cho Spin trong Table
         indicator={isRefetching && <Spin size="large" />} // Spin trong body của bảng khi refetch
       />
 

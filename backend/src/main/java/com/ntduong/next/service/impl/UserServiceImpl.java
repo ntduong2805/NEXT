@@ -1,7 +1,8 @@
 package com.ntduong.next.service.impl;
 
-import com.ntduong.next.dto.OTPReqDto;
+import com.ntduong.next.dto.otp.OTPReqDto;
 import com.ntduong.next.dto.user.UserFavoriteReq;
+import com.ntduong.next.dto.user.UserSettingReqDto;
 import com.ntduong.next.dto.user.UserRegisterDto;
 import com.ntduong.next.dto.user.UserLoginDto;
 import com.ntduong.next.dto.user.UserReqDto;
@@ -13,7 +14,6 @@ import com.ntduong.next.entity.UserFavoriteEntity;
 import com.ntduong.next.exception.DetailException;
 import com.ntduong.next.repository.UserFavoriteRepository;
 import com.ntduong.next.repository.UserRepository;
-import com.ntduong.next.service.CloudinaryService;
 import com.ntduong.next.service.OTPService;
 import com.ntduong.next.service.UserService;
 import com.ntduong.next.util.UserProfileUtils;
@@ -24,7 +24,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,19 +38,17 @@ public class UserServiceImpl implements UserService {
     public static final Long NOT_VERIFIED = 0L;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    UserFavoriteRepository userFavoriteRepository;
+    private UserFavoriteRepository userFavoriteRepository;
 
     @Autowired
-    JwtServiceImpl jwtService;
+    private JwtServiceImpl jwtService;
 
     @Autowired
-    OTPService otpService;
+    private OTPService otpService;
 
-    @Autowired
-    CloudinaryService cloudinaryService;
     private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     @Override
@@ -66,6 +63,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResDto register(UserRegisterDto userCreateDto) {
+        if (ObjectUtils.isEmpty(userCreateDto.getUsername().trim())) {
+            throw new DetailException("Username is not null");
+        }
+        if (ObjectUtils.isEmpty(userCreateDto.getEmail().trim())) {
+            throw new DetailException("Email is not null");
+        }
+        if (ObjectUtils.isNotEmpty(userRepository.findByEmail(userCreateDto.getEmail()))) {
+            throw new DetailException("User already exists");
+        }
+        if (ObjectUtils.isEmpty(userCreateDto.getPassword().trim())) {
+            throw new DetailException("Password is not null");
+        }
         UserEntity newUser = userRepository.save(
                 UserEntity.builder()
                         .username(userCreateDto.getUsername())
@@ -110,7 +119,8 @@ public class UserServiceImpl implements UserService {
         userResponseDto.setUsername(user.getUsername());
         userResponseDto.setPhoneNumber(user.getPhoneNumber());
         userResponseDto.setAvatar(user.getAvatar());
-        userResponseDto.setIsVerified(user.getIsVerifyEmail());
+        userResponseDto.setIsVerifyEmail(user.getIsVerifyEmail());
+        userResponseDto.setAddress(user.getAddress());
         return userResponseDto;
     }
 
@@ -161,20 +171,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResDto settingProfile(UserResDto userResDto) {
+    public UserResDto profileProps(UserSettingReqDto reqDto) {
         UserEntity userEntity = UserProfileUtils.getUserPrincipal();
-        if (ObjectUtils.isNotEmpty(userResDto.getUsername())) {
-            userEntity.setUsername(userResDto.getUsername());
+        if (ObjectUtils.isNotEmpty(reqDto.getUsername())) {
+            userEntity.setUsername(reqDto.getUsername());
         }
-        if (ObjectUtils.isNotEmpty(userResDto.getEmail())) {
-            userEntity.setEmail(userResDto.getEmail());
+        if (ObjectUtils.isNotEmpty(reqDto.getEmail())) {
+            userEntity.setEmail(reqDto.getEmail());
         }
-        if (ObjectUtils.isNotEmpty(userResDto.getPhoneNumber())) {
-            userEntity.setPhoneNumber(userResDto.getPhoneNumber());
+        if (ObjectUtils.isNotEmpty(reqDto.getPhoneNumber())) {
+            userEntity.setPhoneNumber(reqDto.getPhoneNumber());
         }
-        if (ObjectUtils.isNotEmpty(userResDto.getAvatar())) {
-            userEntity.setAvatar(userEntity.getAvatar());
+        if (ObjectUtils.isNotEmpty(reqDto.getPhoneNumber())) {
+            userEntity.setPhoneNumber(reqDto.getPhoneNumber());
         }
+        if (ObjectUtils.isNotEmpty(reqDto.getAddress())) {
+            userEntity.setAddress(reqDto.getAddress());
+        }
+        userEntity = userRepository.save(userEntity);
+
         UserResDto res = new UserResDto();
         BeanUtils.copyProperties(userEntity, res);
         return res;
@@ -203,6 +218,26 @@ public class UserServiceImpl implements UserService {
         try {
             if (ObjectUtils.isNotEmpty(userUploadAvatarReqDto.getAvatar())) {
                 userRepository.uploadAvatar(userUploadAvatarReqDto.getAvatar(), UserProfileUtils.getUserId());
+            }
+        } catch (Exception e) {
+            throw new DetailException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void savePropsUser(UserSettingReqDto reqDto) {
+        try {
+            if (ObjectUtils.isNotEmpty(reqDto.getUsername())) {
+                userRepository.updateUserName(reqDto.getUsername(), UserProfileUtils.getUserId());
+            }
+            if (ObjectUtils.isNotEmpty(reqDto.getEmail())) {
+                userRepository.updateEmail(reqDto.getEmail(), UserProfileUtils.getUserId());
+            }
+            if (ObjectUtils.isNotEmpty(reqDto.getPhoneNumber())) {
+                userRepository.updatePhoneNumber(reqDto.getPhoneNumber(), UserProfileUtils.getUserId());
+            }
+            if (ObjectUtils.isNotEmpty(reqDto.getAddress())) {
+                userRepository.updateAddress(reqDto.getAddress(), UserProfileUtils.getUserId());
             }
         } catch (Exception e) {
             throw new DetailException(e.getMessage());

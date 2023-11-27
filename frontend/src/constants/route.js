@@ -1,5 +1,7 @@
-import ReservationProcess from "../components/ReservationProcess";
-import HomePage from "../pages/home";
+
+import ReservationProcess from "../components/reservations/ReservationProcess";
+import CategoryHome from "../pages/home/CategoryHome";
+import DefaultHome from "../pages/home/Home";
 import PlacePage from "../pages/places";
 import ProfileClient from "../pages/profiles/ProfileClient";
 import ProfileSetting from "../pages/profiles/ProfileSetting";
@@ -12,13 +14,18 @@ export const PUBLIC_ROUTES = [
     {
         name: 'Home',
         path: "/",
-        Element: HomePage,
+        Element: DefaultHome,
+    },
+    {
+        name: "Category",
+        path: "/category/:label",
+        Element: CategoryHome,
     },
     {
         name: "place",
         path: "/places/:placeId",
         Element: PlacePage,
-    }
+    },
 ]
 export const PRIVATE_ROUTES = [
     {

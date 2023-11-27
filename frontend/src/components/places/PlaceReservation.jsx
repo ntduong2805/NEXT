@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Calendar from '../inputs/Calendar';
-import Button from '../Button';
+import React, { useState } from "react";
+import Calendar from "../inputs/Calendar";
+import Button from "../Button";
 
 const PlaceReservation = ({
   price,
@@ -10,14 +10,14 @@ const PlaceReservation = ({
   onSubmit,
   disabled,
   disabledDates,
-  guestCount
+  guestCount,
+  isButtonDisabled,
 }) => {
-  console.log(guestCount);
-  const [localNumGuest, setLocalNumGuest] = useState(1); 
+  const [localNumGuest, setLocalNumGuest] = useState(1);
 
   const handleNumGuestChange = (event) => {
     const newNumGuest = parseInt(event.target.value, 10);
-    
+
     if (newNumGuest <= guestCount) {
       setLocalNumGuest(newNumGuest);
     }
@@ -50,7 +50,11 @@ const PlaceReservation = ({
             min={1}
             max={guestCount}
           />
-          <Button disabled={disabled} label="Reserve" onClick={() => onSubmit(localNumGuest)} />
+          <Button
+            disabled={disabled || isButtonDisabled} // Sử dụng isButtonDisabled ở đây
+            label="Reserve"
+            onClick={() => onSubmit(localNumGuest)}
+          />
         </div>
       </div>
       <div className="p-4 flex flex-row items-center justify-between font-semibold text-lg">
